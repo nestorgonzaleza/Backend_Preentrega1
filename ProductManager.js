@@ -1,89 +1,135 @@
-class ProductManager{
+const fs = require('fs');
 
-    constructor(){
-
-        this.products=[]
-
+class ProductManager {
+    
+    constructor() {
+        this.products = [];
     }
 
+    getProducts() {
 
-    getProducts(){
+        this.leerPackageJson()
 
+        return this.products;
+    }
+
+    addProduct(title, description, price, thumbnail, code, stock) {
+       
+        if (title === '' || description === '' || isNaN(price) || thumbnail === '' || isNaN(code) || isNaN(stock)) {
+            console.log('Los valores ingresados son inválidos');
+            return;
+        }
+
+        price = price;
+
+        const product_id = this.products.length + 1;
+
+        const product = {
+            id: product_id,
+            title,
+            description,
+            price,
+            thumbnail,
+            code,
+            stock
+        };
+
+        if (this.products.some((prod) => prod.code === product.code)) {
+            console.log('Este producto ya existe en el catálogo');
+            return;
+        }
+
+        this.products.push(product);
+        this.guardarJson();
+    }
+
+    getProductById(product_id) {
+
+        this.leerPackageJson()
+
+        const producto_encontrado = this.products.find((prod) => prod.id === product_id);
+
+        if (producto_encontrado) {
+            console.log(producto_encontrado);
+        } else {
+            console.log('Not Found');
+        }
+    }
+
+    deleteProductById(product_id) {
+        const index = this.products.findIndex((prod) => prod.id === product_id);
+
+        if (index !== -1) {
+            this.products.splice(index, 1);
+            this.guardarJson(); 
+            console.log('Producto eliminado correctamente');
+        } else {
+            console.log('Producto no encontrado');
+        }
+    }
+
+    updateProduct(product_id,title, description, price, thumbnail, code, stock){
+
+        this.leerPackageJson()
+
+        const producto_encontrado = this.products.find((prod) => prod.id === product_id);
+
+        if (producto_encontrado) {
+
+            producto_encontrado.title=title
+            producto_encontrado.description=description
+            producto_encontrado.price=price
+            producto_encontrado.thumbnail=thumbnail
+            producto_encontrado.code=code
+            producto_encontrado.stock=stock
+
+
+
+            console.log(producto_encontrado);
+        } else {
+            console.log('Not Found');
+        }
+    }
+
+    guardarJson() {
+        try {
+            fs.writeFileSync('data.json', JSON.stringify(this.products));
+            console.log('Archivo creado correctamente');
+        } catch (error) {
+            console.error('Error al crear el archivo');
+        }
+    }
+
+    leerPackageJson=()=>{
+
+        try{
+        
+        this.products = JSON.parse(fs.readFileSync("data.json","utf-8"))
+        
         return this.products
-
-    }
-
-
-    addProduct(title,description,price,thumbnail,code,stock){
-
-        if (title === '' || description === ''|| isNaN(price) || thumbnail === '' || isNaN(code) || isNaN(stock) ) { // se asegura de ingresar valores válidos
-            alert('Los valores ingresados son inválidos');
-            return;
+        
+        }catch(error){
+        
+        console.error("Error de lectura")
+        
         }
-
-        price = price
-
-        const product_id = this.products.length + 1
-
-        const product={
-
-        id:product_id,
-
-        title,
-
-        description,
-
-        price,
-
-        thumbnail,
-
-        code,
-
-        stock
-
+        
         }
-
-        if (this.products.some((prod) => prod.code === product.code)) {    // no se agregará un producto que YA  se encuentra en el array products
-            alert('Este producto ya existe en el catálogo');
-            return;
-        }
-
-
-        this.products.push(product)
-
-    }
-
-
-    getProductById(product_id){
-
-        const producto_encontrado = this.products.find((prod)=>prod.id===product_id)
-
-        if(producto_encontrado){
-
-            console.log(producto_encontrado)
-
-        }else{
-
-            console.log("Not Found")
-
-        }
-
-
-    }
-
 }
 
-const productManager = new ProductManager()
 
-//Agregar productos_ **addProduct(title,description,price,thumbnail,code,stock)**
+// test
 
-productManager.addProduct("Aros","Aros bellos",1000,"ruta Aros",1,10)
+const productManager = new ProductManager();
 
-productManager.addProduct("Anillos","Anillos bellos",2000,"ruta Anillos",2,5)
+productManager.addProduct('Aros', 'Aros bellos', 1000, 'ruta Aros', 1, 10);
+productManager.addProduct('Anillos', 'Anillos bellos', 2000, 'ruta Anillos', 2, 5);
 
 
-//Obtener los eventos despues de poner en gira_
+const productosActualizados = productManager.getProducts();
+console.log('Productos actualizados', productosActualizados);
 
-const productosActualizados=productManager.getProducts()
+productManager.getProductById(1)
 
-console.log("Productos actualizados",productosActualizados)
+//updateProduct(product_id,title, description, price, thumbnail, code, stock)
+productManager.updateProduct(2,"Actualizado", "Actualizacion del producto", 500, "ruta act", 500, 500)
