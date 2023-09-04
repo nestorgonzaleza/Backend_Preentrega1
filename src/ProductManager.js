@@ -122,9 +122,10 @@ class ProductManager {
 
 const productManager = new ProductManager();
 
-productManager.addProduct('Aros', 'Aros bellos', 1000, 'ruta Aros', 1, 10);
+productManager.addProduct('Aros A', 'Aros bellos', 1000, 'ruta Aros', 1, 10);
 productManager.addProduct('Anillos', 'Anillos bellos', 2000, 'ruta Anillos', 2, 5);
-
+productManager.addProduct('Collar', 'Collar bonito', 4000, 'ruta Collar', 3,6);
+productManager.addProduct('Pulsera', 'Pulsera bonita', 3000, 'ruta Pulsera', 4,10);
 
 const productosActualizados = productManager.getProducts();
 console.log('Productos actualizados', productosActualizados);
