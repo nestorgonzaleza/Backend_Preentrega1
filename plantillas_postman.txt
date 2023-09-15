@@ -1,0 +1,12 @@
+EJEMPLO PARA PLANTILLA
+
+{
+    "title": "parlante",
+    "description": "parlante bonito",
+    "code": "codigo",
+    "price": 10000,
+    "productStatus": true,
+    "stock": 5,
+    "category": "parlantes",
+    "thumbnails": ["direccion 1","direccion 2"]
+}

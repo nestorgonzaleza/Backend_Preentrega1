@@ -13,9 +13,9 @@ class ProductManager {
         return this.products;
     }
 
-    addProduct(title, description, price, thumbnail, code, stock) {
+    addProduct(title, description, price, thumbnail, code, stock, productStatus=true, category) {
        
-        if (title === '' || description === '' || isNaN(price) || thumbnail === '' || isNaN(code) || isNaN(stock)) {
+        if (title === '' || description === '' || isNaN(price) || thumbnail === '' || isNaN(code) || isNaN(stock) || category === '') {
             console.log('Los valores ingresados son inválidos');
             return;
         }
@@ -28,10 +28,14 @@ class ProductManager {
             id: product_id,
             title,
             description,
-            price,
-            thumbnail,
             code,
-            stock
+            price,
+            productStatus,
+            stock,
+            category,
+            thumbnail
+            
+            
         };
 
         if (this.products.some((prod) => prod.code === product.code)) {
