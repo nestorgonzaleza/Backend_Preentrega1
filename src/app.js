@@ -1,7 +1,7 @@
 const express = require("express")
 const app = express()
 const PORT = 8080
-const fs = require('fs').promises;
+const fs = require('fs');
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
@@ -254,9 +254,9 @@ app.listen(PORT, ()=>{
 //FUNCIONES FILE SYSTEM//
 
 //GUARDAR PRODUCTOS EN PRODUCTOS.JSON//
-async function guardarProducto() {
+function guardarProducto() {
   try {
-      await fs.writeFile('productos.json', JSON.stringify(products));
+      fs.writeFile('productos.json', JSON.stringify(products));
       console.log('Archivo creado correctamente');
   } catch (error) {
       console.error('Error al crear el archivo');
@@ -265,11 +265,11 @@ async function guardarProducto() {
 
 //LEER PRODUCTOS EN PRODUCTOS.JSON
 
-async function leerProducto() {
+function leerProducto() {
 
   try{
   
-  products = await JSON.parse(fs.readFile("productos.json","utf-8"))
+  products = JSON.parse(fs.readFileSync("productos.json","utf-8"))
   
   return products
   
@@ -286,9 +286,9 @@ async function leerProducto() {
 
 
 //GUARDAR CARRITOS EN CARRITOS.JSON//
-async function guardarCarrito() {
+function guardarCarrito() {
   try {
-      await fs.writeFile('carrito.json', JSON.stringify(carrito));
+       fs.writeFile('carrito.json', JSON.stringify(carrito));
       console.log('Archivo creado correctamente');
   } catch (error) {
       console.error('Error al crear el archivo');
@@ -297,11 +297,11 @@ async function guardarCarrito() {
 
 //LEER CARRITOS EN CARRITOS.JSON
 
-async function leerCarrito() {
+function leerCarrito() {
 
   try{
   
-  carrito = await JSON.parse(fs.readFileSync("carrito.json","utf-8"))
+  carrito = JSON.parse(fs.readFileSync("carrito.json","utf-8"))
   
   return carrito
   
