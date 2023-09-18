@@ -1,13 +1,7 @@
-const express = require("express")
-const app = express()
-const PORT = 8080
+const express = require("express");
+const router = express.Router()
 const fs = require('fs');
-
-app.use(express.json())
-app.use(express.urlencoded({extended:true}))
-
-
-//********************PRODUCTS********************//
+const path = require('path');
 
 let products = [
     {"id":1,"title":"Aros A","description":"Aros bellos","code":1, "price":1000, "productStatus": true, "stock":10, "category": "Aros", "thumbnails":"ruta Aros"},
@@ -18,7 +12,7 @@ let products = [
 
 
 //CONSULTA PRODUCTOS//
-app.get("/api/products",(req,res)=>{
+router.get("/api/products",(req,res)=>{
     try {
         leerProducto()
         let productos = products
@@ -28,7 +22,7 @@ app.get("/api/products",(req,res)=>{
             res.json(productos)
         } else {
             let productosLimite = productos.slice(0,limite)
-            res.send(productosLimite)
+            res.json(productosLimite)
 
         }
     } catch (error) {
@@ -39,13 +33,13 @@ app.get("/api/products",(req,res)=>{
 
 
 //CONSULTA PRODUCTOS POR ID//
-app.get("/api/products/:pid", (req, res) => {
+router.get("/api/products/:pid", (req, res) => {
     try {
       leerProducto()
       const productos = products;
       const productoEncontrado = productos.find((prod) => prod.id === parseInt(req.params.pid));
       if (productoEncontrado) {
-        res.send(productoEncontrado);
+        res.json(productoEncontrado);
       } else {
         res.status(404).send("Producto no encontrado");
       }
@@ -57,7 +51,7 @@ app.get("/api/products/:pid", (req, res) => {
 
 
 //AÑADIR PRODUCTO CON POST//
-app.post("/api/products", (req, res) => {
+router.post("/api/products", (req, res) => {
   try {
 
     const product_id = products.length + 1 ;
@@ -92,7 +86,7 @@ app.post("/api/products", (req, res) => {
 
 
 //ACTUALIZAR PRODUCTOS POR ID//
-app.put("/api/products/:pid", (req, res) => {
+router.put("/api/products/:pid", (req, res) => {
   try {
     leerProducto()
     let {title, description, code, price, productStatus, stock, category, thumbnails} = req.body;
@@ -125,7 +119,7 @@ app.put("/api/products/:pid", (req, res) => {
 
 
 //ELIMINAR PRODUCTO POR ID//
-app.delete("/api/products/:pid", (req, res) => {
+router.delete("/api/products/:pid", (req, res) => {
   try {
     leerProducto()
     const productos = products;
@@ -147,168 +141,38 @@ app.delete("/api/products/:pid", (req, res) => {
 
 
 
-//********************CARRITO********************//
-
-let carrito = []
-
-//AÑADIR UN NUEVO CARRITO VACÍO//
-app.post("/api/carts", (req, res) => {
-  try {
-    leerCarrito()
-    const cart_id = carrito.length + 1 ;
-    const nuevoCarrito = {
-      Id: cart_id,
-      products: []
-    };
-
-    carrito.push(nuevoCarrito)
-    console.log("Carrito añadido correctamente")
-    guardarCarrito()
-     
-    } catch (error) {
-      console.log(error);
-      res.status(500).send("Error interno del servidor");
-    }
-  });
-
-
-//CONSULTAR PRODUCTOS DENTRO DE UN CARRITO//
-app.get("/api/carts/:cid", (req, res) => {
-  try {
-    leerCarrito()
-    const carritos = carrito;
-    const carritoEncontrado = carritos.find((cart) => cart.Id === parseInt(req.params.cid));
-    if (carritoEncontrado) {
-      res.send(carritoEncontrado.products);
-    } else {
-      res.status(404).send("Carrito no encontrado");
-    }
-    
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Error interno del servidor");
-  }
-});
-
-
-//AÑADIR PRODUCTO AL CARRITO CON POST//
-app.post("/api/carts/:cid/product/:pid", (req, res) => {
-  try {
-    //encontrar Carrito//
-    leerCarrito()
-    const carritos = carrito;
-    const carritoEncontrado = carritos.find((cart) => cart.Id === parseInt(req.params.cid));
-
-    if (!carritoEncontrado) {
-      res.status(404).send("Carrito no encontrado, favor ingresar un Id válido de carrito");
-      return;
-    }
-
-    //encontrar Producto//
-    leerProducto()
-    const productos = products;
-    const productoEncontrado = productos.find((prod) => prod.id === parseInt(req.params.pid));
-
-    if (!productoEncontrado) {
-      res.status(404).send("Producto no encontrado, favor ingresar un Id válido de los productos");
-      return;
-    }
-
-    //añadir al carrito//
-    const productoEnCarrito = carritoEncontrado.products.find((prod) => prod.id === parseInt(req.params.pid));
-
-    if (productoEnCarrito) {
-      
-      productoEnCarrito.quantity += 1;
-
-      
-    } else {
-      productoAgregado = {
-        id: productoEncontrado.id,
-        quantity: 1
-      }
-      carritoEncontrado.products.push(productoAgregado);
-
-    }
-
-    // Envía una respuesta después de todas las operaciones
-    res.send("Producto agregado al carrito exitosamente");
-    guardarCarrito();
-
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Error interno del servidor");
-  }
-});
-
-
-
-
-
-//app listening//
-app.listen(PORT, ()=>{
-    console.log(`Server escuchando en ${PORT}`)
-})
 
 
 //FUNCIONES FILE SYSTEM//
 
 //GUARDAR PRODUCTOS EN PRODUCTOS.JSON//
 function guardarProducto() {
-  try {
-      fs.writeFile('productos.json', JSON.stringify(products));
-      console.log('Archivo creado correctamente');
-  } catch (error) {
-      console.error('Error al crear el archivo');
-  }
+    try {
+        const filePath = path.join(__dirname, '../../productos.json');
+        fs.writeFile(filePath, JSON.stringify(products), (err) => {
+            if (err) {
+                console.error('Error al crear el archivo:', err);
+            } else {
+                console.log('Archivo creado correctamente');
+            }
+        });
+    } catch (error) {
+        console.error('Error al crear el archivo:', error);
+    }
 }
 
-//LEER PRODUCTOS EN PRODUCTOS.JSON
 
+  
+  //LEER PRODUCTOS EN PRODUCTOS.JSON
 function leerProducto() {
-
-  try{
-  
-  products = JSON.parse(fs.readFileSync("productos.json","utf-8"))
-  
-  return products
-  
-  }catch(error){
-  
-  console.error("Error de lectura")
-  
-  }
-  
-  }
-
-
-
-
-
-//GUARDAR CARRITOS EN CARRITOS.JSON//
-function guardarCarrito() {
-  try {
-       fs.writeFile('carrito.json', JSON.stringify(carrito));
-      console.log('Archivo creado correctamente');
-  } catch (error) {
-      console.error('Error al crear el archivo');
-  }
+    try {
+        const filePath = path.join(__dirname, '../../productos.json');
+        products = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        return products;
+    } catch (error) {
+        console.error('Error de lectura:', error);
+    }
 }
 
-//LEER CARRITOS EN CARRITOS.JSON
-
-function leerCarrito() {
-
-  try{
   
-  carrito = JSON.parse(fs.readFileSync("carrito.json","utf-8"))
-  
-  return carrito
-  
-  }catch(error){
-  
-  console.error("Error de lectura")
-  
-  }
-  
-  }
+module.exports = router
