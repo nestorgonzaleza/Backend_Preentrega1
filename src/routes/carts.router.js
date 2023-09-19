@@ -101,7 +101,7 @@ router.post("/api/carts/:cid/product/:pid", (req, res) => {
 //GUARDAR CARRITOS EN CARRITOS.JSON//
 function guardarCarrito() {
     try {
-        const filePath = path.join(__dirname, 'carrito.json');
+        const filePath = path.join(__dirname, '../../carrito.json');
         fs.writeFileSync(filePath, JSON.stringify(carrito));
         console.log('Archivo creado correctamente');
     } catch (error) {
@@ -113,7 +113,7 @@ function guardarCarrito() {
   
   function leerCarrito() {
     try {
-        const filePath = path.join(__dirname, 'carrito.json');
+        const filePath = path.join(__dirname, '../../carrito.json');
         carrito = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
         return carrito;
     } catch (error) {

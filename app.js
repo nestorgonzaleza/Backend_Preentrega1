@@ -4,7 +4,7 @@ const productsRouter = require("./src/routes/productos.router")
 const cartsRouter = require("./src/routes/carts.router")
 const app = express()
 const PORT = 8080
-// const fs = require('fs');
+
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
