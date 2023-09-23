@@ -11,6 +11,17 @@ let products = [
   ]
 
 
+//RUTA RAÍZ
+router.get("/",(req,res)=>{
+
+  leerProducto()
+
+  res.render("home", { 
+    productos: products 
+  })
+})  
+
+
 //CONSULTA PRODUCTOS//
 router.get("/api/products",(req,res)=>{
     try {
