@@ -58,11 +58,7 @@ io.on("connection", (socket) => {
     socket.emit("mostrarProductos", productos)
   });
 
-  // // Leer productos del archivo JSON.
-  // leerProducto()
-
-  // // Emitir los productos al cliente que se ha conectado.
-  // socket.emit("productosActualizados", products);
+ 
 });
 
 
