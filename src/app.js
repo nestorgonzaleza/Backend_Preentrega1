@@ -52,6 +52,10 @@ io.on("connection", (socket) => {
   socket.on("message", (data)=>{
     console.log(data)
   })  
+  socket.on("solicitarProductos", () => {
+    const productos = leerProducto();
+    console.log(productos);
+  });
 
   // // Leer productos del archivo JSON.
   // leerProducto()
