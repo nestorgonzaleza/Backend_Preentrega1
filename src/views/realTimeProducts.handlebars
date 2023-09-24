@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Productos en tiempo real</title>
-    <script src="/socket.io/socket.io.js"></script>
+    
 </head>
 <body>
     <div>
-        <h1>Lista de productos en tiempo real</h1>
+        <h1>Lista de productos en tiempo real no</h1>
         <div id="productos-container">
             
         </div>
     </div>
-    <script src="/src/routes/realtimeproducts.router.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    {{!-- <script src="https://cdn.socket.io/socket.io-1.0.0.js"></script> --}}
+    <script src="/realtimeproducts.router.js"></script>
 </body>
 </html>
