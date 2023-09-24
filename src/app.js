@@ -6,6 +6,7 @@ const path = require("path");
 const {Server} = require("socket.io")
 const productsRouter = require("./routes/productos.router")
 const cartsRouter = require("./routes/carts.router")
+const fs = require("fs")
 // const realTimeProductsRouter = require("./routes/realtimeproducts.router")
 
 const app = express()
@@ -24,30 +25,50 @@ app.use(express.urlencoded({extended:true}))
 app.engine("handlebars", handlebars.engine())
 app.set("views", path.join(__dirname, "views"))
 app.set("view engine", "handlebars")
+app.use(express.static(__dirname+"/views"))
 app.use(express.static(path.join(__dirname, "public")))
 
 //routers
 app.use("/", productsRouter)
 app.use("/", cartsRouter)
 
-//endpoint socket
+// endpoint socket
 app.get("/realtimeproducts", (req,res)=>{
-  res.render("realTimeProducts", {productos: products})
+  res.render("realTimeProducts")
 })
 
 
 
 //socket.io
-io.on("connection", (socket)=>{
-  console.log("Un usuario se ha conectado")
- 
-})
+io.on("connection", (socket) => {
+  console.log("Un usuario se ha conectado");
+
+  // Leer productos del archivo JSON.
+  leerProducto()
+
+  // Emitir los productos al cliente que se ha conectado.
+  socket.emit("productosActualizados", products);
+});
+
+
 
 
 
 //app listening//
-app.listen(PORT, ()=>{
+server.listen(PORT, ()=>{
   console.log(`Server escuchando en ${PORT}`)
 })
 
 
+
+
+  //LEER PRODUCTOS EN PRODUCTOS.JSON
+function leerProducto() {
+    try {
+        const filePath = path.join(__dirname, '../productos.json');
+        products = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        return products;
+    } catch (error) {
+        console.error('Error de lectura:', error);
+    }
+}

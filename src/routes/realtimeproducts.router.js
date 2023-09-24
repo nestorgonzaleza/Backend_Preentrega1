@@ -1,11 +1,20 @@
-// const socket = io()
+const socket = io()
 
-
-
-
-
-leerProducto()
-
+socket.on("productosActualizados", (productos) => {
+    // Limpiar el renderizado actual
+    const productosContainer = document.getElementById("productos-container");
+    productosContainer.innerHTML = ""; 
+  
+    // Construye el HTML con los datos de productos actualizados.
+    productos.forEach((producto) => {
+      const productoElement = document.createElement("div");
+      productoElement.innerHTML = `
+        <p>${producto.title}</p>
+        <p>${producto.price}</p>
+      `;
+      productosContainer.appendChild(productoElement);
+    });
+  });
 
 
 

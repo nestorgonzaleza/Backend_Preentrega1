@@ -8,18 +8,11 @@
 </head>
 <body>
     <div>
-
-    <h1>Lista de productos en tiempo real</h1>
-
-    {{#each productos}}
-    <div>
-        <p>{{this.title}}</p>
-        <p>{{this.price}}</p>
+        <h1>Lista de productos en tiempo real</h1>
+        <div id="productos-container">
+            
+        </div>
     </div>
-    {{/each}}
-    </div>
-
-    <!-- Llama a tu archivo JavaScript después de que se haya cargado el cliente de Socket.IO -->
-    <script src="/realtimeproducts.router.js"></script>
+    <script src="/src/routes/realtimeproducts.router.js"></script>
 </body>
 </html>
