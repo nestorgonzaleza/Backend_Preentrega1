@@ -2,7 +2,7 @@ const socket = io();
 
 
 socket.on("connect", ()=>{
-   socket.emit("message","Al parecer se está entendiendo esto")
+
    socket.emit("solicitarProductos");
   
 })
