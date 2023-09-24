@@ -55,6 +55,7 @@ io.on("connection", (socket) => {
   socket.on("solicitarProductos", () => {
     const productos = leerProducto();
     console.log(productos);
+    socket.emit("mostrarProductos", productos)
   });
 
   // // Leer productos del archivo JSON.
