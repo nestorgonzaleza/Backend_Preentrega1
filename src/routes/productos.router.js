@@ -3,6 +3,7 @@ const router = express.Router()
 const fs = require('fs');
 const path = require('path');
 
+
 let products = [
     {"id":1,"title":"Aros A","description":"Aros bellos","code":1, "price":1000, "productStatus": true, "stock":10, "category": "Aros", "thumbnails":"ruta Aros"},
     {"id":2,"title":"Anillos","description":"Anillos bellos", "code":2, "price":2000, "productStatus": true, "stock":5, "category": "Anillos", "thumbnails":"ruta Anillos"},
@@ -87,6 +88,7 @@ router.post("/api/products", (req, res) => {
     products.push(nuevoProducto)
     guardarProducto()
     console.log("Producto agregado correctamente")
+
     };
      
     } catch (error) {
