@@ -65,7 +65,7 @@ router.get("/api/products/:pid", (req, res) => {
 //AÑADIR PRODUCTO CON POST//
 router.post("/api/products", (req, res) => {
   try {
-
+    leerProducto()
     const product_id = products.length + 1 ;
     let {title, description, code, price, productStatus, stock, category, thumbnails} = req.body;
 
