@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router()
 const fs = require('fs');
 const path = require('path');
-
+const {productModel} = require("../models/productos.model")
 
 let products = [
     {"id":1,"title":"Aros A","description":"Aros bellos","code":1, "price":1000, "productStatus": true, "stock":10, "category": "Aros", "thumbnails":"ruta Aros"},
@@ -13,147 +13,141 @@ let products = [
 
 
 //RUTA RAÍZ
-router.get("/",(req,res)=>{
+router.get("/", async(req,res)=>{
+  try{
+      let products = await productModel.find()
+      res.send({result: "success", payload: products})
+  } catch (error) {
+      console.log(error)
+  }
+  //FS**********************************************************
+  // leerProducto()
 
-  leerProducto()
-
-  res.render("home", { 
-    productos: products 
-  })
+//   res.render("home", { 
+//     productos: products 
+//   })
 })  
 
 
-//CONSULTA PRODUCTOS//
-router.get("/api/products",(req,res)=>{
-    try {
-        leerProducto()
-        let productos = products
-        let limite = req.query.limit
-
-        if(!limite || limite == 0 || limite > productos.length ){
-            res.json(productos)
-        } else {
-            let productosLimite = productos.slice(0,limite)
-            res.json(productosLimite)
-
-        }
-    } catch (error) {
-        console.log(error)
-    }
-    
-})
-
-
-//CONSULTA PRODUCTOS POR ID//
-router.get("/api/products/:pid", (req, res) => {
-    try {
-      leerProducto()
-      const productos = products;
-      const productoEncontrado = productos.find((prod) => prod.id === parseInt(req.params.pid));
-      if (productoEncontrado) {
-        res.json(productoEncontrado);
-      } else {
-        res.status(404).send("Producto no encontrado");
-      }
-    } catch (error) {
-      console.log(error);
-      res.status(500).send("Error interno del servidor");
-    }
-  });
-
-
 //AÑADIR PRODUCTO CON POST//
-router.post("/api/products", (req, res) => {
-  try {
-    leerProducto()
-    const product_id = products.length + 1 ;
-    let {title, description, code, price, productStatus, stock, category, thumbnails} = req.body;
+router.post("/", async(req,res)=>{
+  let {title, description, code, price, productStatus, stock, category, thumbnails} = req.body
+
+  if (!title || !description  || !code || !price || !productStatus || !stock || !category ){
+      res.send({status: "error", error: "Faltan datos" })
+  }
+  let result = await productModel.create({title, description, code, price, productStatus, stock, category, thumbnails})
+  res.send({ result: "success", payload: result})
 
 
-    if (title === '' || description === '' || isNaN(price) || code === '' || isNaN(stock) || category === '') {
-      console.log('Los valores ingresados son inválidos');
-      return;
-    }else{
-    const nuevoProducto = {
-        id: product_id,
-        title: title,
-        description: description,
-        code: code,
-        price: price,
-        productStatus: true,
-        stock: stock,
-        category: category,
-        thumbnails: thumbnails
-    }
-    products.push(nuevoProducto)
-    guardarProducto()
-    console.log("Producto agregado correctamente")
+  //FS**********************************************************
+  // try {
+  //   leerProducto()
+  //   const product_id = products.length + 1 ;
+  //   let {title, description, code, price, productStatus, stock, category, thumbnails} = req.body;
 
-    };
+
+  //   if (title === '' || description === '' || isNaN(price) || code === '' || isNaN(stock) || category === '') {
+  //     console.log('Los valores ingresados son inválidos');
+  //     return;
+  //   }else{
+  //   const nuevoProducto = {
+  //       id: product_id,
+  //       title: title,
+  //       description: description,
+  //       code: code,
+  //       price: price,
+  //       productStatus: true,
+  //       stock: stock,
+  //       category: category,
+  //       thumbnails: thumbnails
+  //   }
+  //   products.push(nuevoProducto)
+  //   guardarProducto()
+  //   console.log("Producto agregado correctamente")
+
+  //   };
      
-    } catch (error) {
-      console.log(error);
-      res.status(500).send("Error interno del servidor");
-    }
-  });
+  //   } catch (error) {
+  //     console.log(error);
+  //     res.status(500).send("Error interno del servidor");
+  //   }
+});
 
 
 //ACTUALIZAR PRODUCTOS POR ID//
-router.put("/api/products/:pid", (req, res) => {
-  try {
-    leerProducto()
-    let {title, description, code, price, productStatus, stock, category, thumbnails} = req.body;
-    const productos = products;
-    const productoEncontrado = productos.find((prod) => prod.id === parseInt(req.params.pid));
+router.put("/:pid", async(req, res) => {
+  let {pid} = req.params
 
-    if (title === '' || description === '' || isNaN(price) || code === '' || isNaN(stock) || category === '') {
-      console.log('Los valores ingresados son inválidos');
-      return;
-    }else{
-      productoEncontrado.title = title
-      productoEncontrado.description = description
-      productoEncontrado.code = code
-      productoEncontrado.price = price
-      productoEncontrado.productStatus = true
-      productoEncontrado.stock = stock
-      productoEncontrado.category = category
-      productoEncontrado.thumbnails = thumbnails
+  let productToReplace = req.body
+  if( !productToReplace.title || !productToReplace.description  || !productToReplace.code || !productToReplace.price || !productToReplace.productStatus || !productToReplace.stock || !productToReplace.category){
+      res.send({status: "error", error: "No hay datos en parámetros"})
+  }
+
+  let result = await productModel.updateOne({_id: pid}, productToReplace)
+  res.send({result: "success", payload: result})
+
+
+  //FS**********************************************************
+  // try {
+  //   leerProducto()
+  //   let {title, description, code, price, productStatus, stock, category, thumbnails} = req.body;
+  //   const productos = products;
+  //   const productoEncontrado = productos.find((prod) => prod.id === parseInt(req.params.pid));
+
+  //   if (title === '' || description === '' || isNaN(price) || code === '' || isNaN(stock) || category === '') {
+  //     console.log('Los valores ingresados son inválidos');
+  //     return;
+  //   }else{
+  //     productoEncontrado.title = title
+  //     productoEncontrado.description = description
+  //     productoEncontrado.code = code
+  //     productoEncontrado.price = price
+  //     productoEncontrado.productStatus = true
+  //     productoEncontrado.stock = stock
+  //     productoEncontrado.category = category
+  //     productoEncontrado.thumbnails = thumbnails
       
-      console.log("Producto actualizado correctamente")  
+  //     console.log("Producto actualizado correctamente")  
         
-    };
+  //   };
 
-    guardarProducto() 
-    } catch (error) {
-      console.log(error);
-      res.status(500).send("Error interno del servidor");
-    }
-  });
+  //   guardarProducto() 
+  //   } catch (error) {
+  //     console.log(error);
+  //     res.status(500).send("Error interno del servidor");
+  //   }
+});
 
 
 //ELIMINAR PRODUCTO POR ID//
-router.delete("/api/products/:pid", (req, res) => {
-  try {
-    leerProducto()
-    const productos = products;
+router.delete("/:pid", async(req, res) => {
+  let {pid} = req.params
+  let result = await productModel.deleteOne({_id: pid})
+  res.send({result: "success", payload: result})
 
-    const productoEncontrado = productos.find((prod) => prod.id === parseInt(req.params.pid));
-      if (productoEncontrado) {
-        products = productos.filter((prod) => prod.id !== parseInt(req.params.pid));
+
+  // try {
+  //   leerProducto()
+  //   const productos = products;
+
+  //   const productoEncontrado = productos.find((prod) => prod.id === parseInt(req.params.pid));
+  //     if (productoEncontrado) {
+  //       products = productos.filter((prod) => prod.id !== parseInt(req.params.pid));
         
-      } else {
-        res.status(404).send("Producto no encontrado");
-      }
+  //     } else {
+  //       res.status(404).send("Producto no encontrado");
+  //     }
     
-    guardarProducto() 
-    } catch (error) {
-      console.log(error);
-      res.status(500).send("Error interno del servidor");
-    }
-  });
+  //   guardarProducto() 
+  //   } catch (error) {
+  //     console.log(error);
+  //     res.status(500).send("Error interno del servidor");
+  //   }
+});
 
 
-
+module.exports = router
 
 
 //FUNCIONES FILE SYSTEM//
@@ -188,4 +182,58 @@ function leerProducto() {
 }
 
   
-module.exports = router
+
+
+
+
+
+
+
+
+
+
+//CONSULTA UN N DE PRODUCTOS - NO REQUERIDA//
+// router.get("/nproducts", async(req,res)=>{
+//   try{
+//       let products = userModel.find()
+//       res.send({result: "success", payload: products})
+//   } catch (error) {
+//       console.log(error)
+//   }
+
+    //CON FYLE SYSTEM
+    // try {
+    //     leerProducto()
+    //     let productos = products
+    //     let limite = req.query.limit
+
+    //     if(!limite || limite == 0 || limite > productos.length ){
+    //         res.json(productos)
+    //     } else {
+    //         let productosLimite = productos.slice(0,limite)
+    //         res.json(productosLimite)
+
+    //     }
+    // } catch (error) {
+    //     console.log(error)
+    // }
+    
+// })
+
+
+//CONSULTA PRODUCTOS POR ID - NO REQUERIDA//
+// router.get("/:pid", (req, res) => {
+//     try {
+//       leerProducto()
+//       const productos = products;
+//       const productoEncontrado = productos.find((prod) => prod.id === parseInt(req.params.pid));
+//       if (productoEncontrado) {
+//         res.json(productoEncontrado);
+//       } else {
+//         res.status(404).send("Producto no encontrado");
+//       }
+//     } catch (error) {
+//       console.log(error);
+//       res.status(500).send("Error interno del servidor");
+//     }
+//   });

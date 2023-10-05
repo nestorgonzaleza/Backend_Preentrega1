@@ -1,0 +1,18 @@
+<div>
+
+    
+
+    <h2>Bienvenido {{user.cargo}} de {{user.institucion}}</h2>
+    <div>
+        <h1>Envíanos un mensaje!</h1>
+        <form action="/api/messages" method ="post">
+        <label for="user">Ingrese su correo</label>
+        <input type="text" id="user" name ="user" required>
+        <label for="message">Mensaje</label>
+        <input type="text" id="message" name = "message" required>
+       
+        <button type="submit">Enviar</button>
+        </form>
+    </div>
+    
+</div>

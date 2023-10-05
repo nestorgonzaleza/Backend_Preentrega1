@@ -6,8 +6,13 @@ const path = require("path");
 const {Server} = require("socket.io")
 const productsRouter = require("./routes/productos.router")
 const cartsRouter = require("./routes/carts.router")
+const chatRouter = require("./routes/chat.router")
+const mongoose = require("mongoose");
 // const realTimeProductsRouter = require("./public/realtimeproducts.router")
 const fs = require("fs")
+
+
+
 
 const app = express()
 const server = http.createServer(app)
@@ -32,14 +37,35 @@ app.use(express.static(__dirname+"/views"))
 app.use(express.static(path.join(__dirname, "public")))
 
 //routers
-app.use("/", productsRouter)
-app.use("/", cartsRouter)
+app.use("/api/products", productsRouter)
+app.use("/api/carts", cartsRouter)
+app.use("/api/messages", chatRouter)
 
+//Mongoose
+mongoose.connect("mongodb+srv://nestorgonzalez:012342023@clusterbackend.m8mx5zs.mongodb.net/?retryWrites=true&w=majority")
+    .then(()=>{
+        console.log("Conectado a la BD")
+    })
+    .catch((error)=>{
+        console.error(`Error al intentar conectar a la BD ${error}`)
+    })
+
+//ENDPOINT CHAT
+app.get("/", (req,res)=>{
+  let user = {
+    cargo : "Profe",
+    institucion : "Coderhouse"
+
+  }
+  res.render("chat", {user:user})
+})
+
+
+//SOCKETS
 // endpoint socket
 app.get("/realtimeproducts", (req,res)=>{
   res.render("realTimeProducts.handlebars")
 })
-
 
 
 //socket.io

@@ -60,6 +60,7 @@
     "minimatch": "^9.0.3",
     "minimist": "^1.2.8",
     "minipass": "^7.0.3",
+    "mongoose": "^7.5.3",
     "ms": "^2.0.0",
     "negotiator": "^0.6.3",
     "neo-async": "^2.6.2",

@@ -1,4 +1,4 @@
-EJEMPLO PARA PLANTILLA
+EJEMPLO PARA PLANTILLA PRODUCTOS POST
 
 {
     "title": "parlante",
@@ -8,5 +8,14 @@ EJEMPLO PARA PLANTILLA
     "productStatus": true,
     "stock": 5,
     "category": "parlantes",
-    "thumbnails": ["direccion 1","direccion 2"]
+    "thumbnails": "enlace1234"
+}
+
+
+
+PLANTILLA PRODUCTOS CARRO PUT
+{
+"producto1": "parlante",
+  "producto2": "microfono",
+  "producto3": "radio"
 }
