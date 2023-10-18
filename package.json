@@ -61,6 +61,7 @@
     "minimist": "^1.2.8",
     "minipass": "^7.0.3",
     "mongoose": "^7.5.3",
+    "mongoose-paginate-v2": "^1.7.4",
     "ms": "^2.0.0",
     "negotiator": "^0.6.3",
     "neo-async": "^2.6.2",

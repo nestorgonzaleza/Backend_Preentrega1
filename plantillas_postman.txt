@@ -15,7 +15,14 @@ EJEMPLO PARA PLANTILLA PRODUCTOS POST
 
 PLANTILLA PRODUCTOS CARRO PUT
 {
-"producto1": "parlante",
-  "producto2": "microfono",
-  "producto3": "radio"
+  [
+    {"id":id,"quantity":n},
+    {"id":id,"quantity":n},
+    {"id":id,"quantity":n}
+  ]
+}
+
+PLANTILLA PRODUCTOS CARRO PUT ACTUALIZAR CANTIDAD DE UN PRODUCTO
+{
+  "newQuantity": 3
 }

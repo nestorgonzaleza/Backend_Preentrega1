@@ -11,13 +11,23 @@ const {cartModel} = require("../models/carts.model")
 //CONSULTAR POR LOS CARRITOS EXISTENTES
 router.get("/", async(req, res) => {
   try{
-    let carts = await cartModel.find()
+    let carts = await cartModel.find().populate('products.id')
     res.send({result: "success", payload: carts})
   } catch (error) {
     console.log(error)
   }
 });
 
+//CONSULTAR POR UN CARRITO ESPECIFICO
+router.get("/:cid", async(req, res) => {
+  try{
+    let {cid} = req.params
+    let carts = await cartModel.findOne({_id:cid}).populate('products.id')
+    res.send({result: "success", payload: carts.products})
+  } catch (error) {
+    console.log(error)
+  }
+});
 
 //AÑADIR UN NUEVO CARRITO VACÍO//
 router.post("/", async(req, res) => {
@@ -47,21 +57,20 @@ router.post("/", async(req, res) => {
 
 
 
-//CAMBIAR PRODUCTOS DE UN CARRITO INGRESANDO SU ID//
-router.put("/:cid/product", async(req, res) => {
-  let productosJSON = req.body
-  let {cid} = req.params
-  //transforma los productos ingresados en u narray para reemplazar al array anterior del carrito correspondiente
-  let productsToUpdate = {};
+//ACTUALIZAR PRODUCTOS DE UN CARRITO//
+router.put("/:cid", async(req, res) => {
+  try{
+    let productsUpdate = req.body
+    let {cid} = req.params
 
-  for (const key in productosJSON) {
-    productsToUpdate[key] = productosJSON[key];
+  
+    let result = await cartModel.updateOne({_id: cid}, {$set: {products : productsUpdate}})
+    res.send({result: "success", payload: result})
+
+  } catch(error){
+    console.error(error)
+    res.status(500).json({ result: "error", message: "Error interno del servidor" });
   }
-
- 
-  let result = await cartModel.updateOne({_id: cid}, {$set: {products : productsToUpdate}})
-  res.send({result: "success", payload: result})
-
 
   //FS***************************************************
   // try {
@@ -112,10 +121,60 @@ router.put("/:cid/product", async(req, res) => {
   // }
 });
 
-router.delete("/:cid", async(req, res) => {
-  let {cid} = req.params
-  let result = await cartModel.deleteOne({_id: cid})
-  res.send({result: "success", payload: result})
+//ACTUALIZAR LA CANTIDAD DEL PRODUCTO INDICADO DEL CARRO INDICADO
+router.put("/:cid/products/:pid", async(req, res) => {
+  try{
+    let {cid} = req.params
+    let {pid} = req.params
+    let {newQuantity} = req.body
+    const carro = await cartModel.findOne({_id : cid})
+    if (!carro) {
+      return res.status(404).json({ result: "error", message: "El ID proporcionado no coincide con ningún carro" });
+    }
+
+    const productToUp = carro.products.find((products)=>products.id == pid)
+    if (!productToUp) {
+      return res.status(404).json({ result: "error", message: "El ID proporcionado no coincide con ningún producto" });
+    }
+    productToUp.quantity = newQuantity
+
+    const nuevosProductos = carro.products.filter((products)=>products.id !== pid)
+    nuevosProductos.push(productToUp)
+
+    let result = await cartModel.updateOne({_id: cid}, {$set: {products : nuevosProductos}})
+    res.send({result: "success", payload: result})
+
+  } catch (error){
+    console.error(error);
+    res.status(500).json({ result: "error", message: "Error interno del servidor" });
+  }
+
+});
+
+//ELIMINAR PRODUCTO DEL CARRO INDICADO
+router.delete("/:cid/products/:pid", async(req, res) => {
+  try{
+    let {cid} = req.params
+    let {pid} = req.params
+
+    const carro = await cartModel.findOne({_id : cid})
+    if (!carro) {
+      return res.status(404).json({ result: "error", message: "El ID proporcionado no coincide con ningún carro" });
+    }
+
+    const nuevosProductos = carro.products.filter((products)=>products.id !== pid)
+    
+    let result = await cartModel.updateOne({_id: cid}, {$set: {products : nuevosProductos}})
+    res.send({result: "success", payload: result})
+
+  } catch (error){
+    console.error(error);
+    res.status(500).json({ result: "error", message: "Error interno del servidor" });
+  }
+
+  
+  // let result = await cartModel.deleteOne({_id: cid})
+  // res.send({result: "success", payload: result})
 
 
   // try {

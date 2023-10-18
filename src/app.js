@@ -9,7 +9,8 @@ const cartsRouter = require("./routes/carts.router")
 const chatRouter = require("./routes/chat.router")
 const mongoose = require("mongoose");
 // const realTimeProductsRouter = require("./public/realtimeproducts.router")
-const fs = require("fs")
+const fs = require("fs");
+const { productModel } = require("./models/productos.model");
 
 
 
@@ -60,6 +61,13 @@ app.get("/", (req,res)=>{
   res.render("chat", {user:user})
 })
 
+//ENDPONT DETALLES
+app.get("/product/:pid", async (req,res)=>{
+  let {pid} = req.params
+  let detalle = await productModel.findOne({_id:pid})
+  detalle = detalle.toJSON()
+  res.render("detailProduct", {product: detalle})
+})
 
 //SOCKETS
 // endpoint socket

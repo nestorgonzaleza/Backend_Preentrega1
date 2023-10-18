@@ -14,9 +14,53 @@ let products = [
 
 //RUTA RAÍZ
 router.get("/", async(req,res)=>{
+    const consulta = {}
+    const opciones = {}
+    ordenar = {}
+    limit = parseInt(req.query.limit)
+    page = parseInt(req.query.page)
+    filtro = req.query.query
+    orden = parseInt(req.query.sort)
+
+    //LIMIT
+    if(!limit){
+        limit = 10    
+    }
+    opciones.limit = limit
+    // stages.push({
+    //     $limit: limit
+    // })
+
+    //PAGE
+    if(!page){
+        page = 1
+    }  
+    opciones.page = page
+    // stages.push({
+    //     page: page
+    // })
+    
+    //QUERY - FILTRO POR CATEGORIA
+    if(filtro){
+        consulta.category = filtro
+        // stages.push({
+        //     $match: {category: filtro}
+        // })
+    }    
+   
+
+    //SORT
+    if(req.query.sort === 1 || req.query.sort === -1){
+        ordenar.price = orden
+    }
+
+
+
+
   try{
-      let products = await productModel.find()
+      let products = await productModel.paginate(consulta,opciones,ordenar)
       res.send({result: "success", payload: products})
+      
   } catch (error) {
       console.log(error)
   }
@@ -26,6 +70,24 @@ router.get("/", async(req,res)=>{
 //   res.render("home", { 
 //     productos: products 
 //   })
+})  
+
+
+//VISTA PAGINACION
+router.get("/all", async(req,res)=>{
+    
+    try {
+                
+        let totalProducts = await productModel.find();
+        totalProducts = totalProducts.map(product=> product.toJSON())
+        
+        
+       
+        res.render('products', {products: totalProducts} );
+      } catch (error) {
+        console.log(error);
+        res.status(500).json({ result: 'error', message: 'Error en la consulta.' });
+      }
 })  
 
 
