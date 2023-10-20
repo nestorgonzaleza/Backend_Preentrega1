@@ -77,13 +77,19 @@ router.get("/", async(req,res)=>{
 router.get("/all", async(req,res)=>{
     
     try {
-                
-        let totalProducts = await productModel.find();
-        totalProducts = totalProducts.map(product=> product.toJSON())
+        //pagina a mostrar
+        const page = parseInt(req.query.page) || 1;
+        //limite de elementos a mostrar
+        const limit = 5;         
+        let totalProducts = await productModel.paginate({},{page,limit});
+        // totalProducts = totalProducts.map(product=> product.toJSON())
+        let productsRender = totalProducts.docs.map(product => product.toJSON())
+        
+        const previousPage = page - 1;
+        const nextPage = page + 1;
         
         
-       
-        res.render('products', {products: totalProducts} );
+        res.render('products', {products: productsRender, pageCount: totalProducts.totalPages, currentPage: page, previousPage: previousPage, nextPage: nextPage, hasPrevius : totalProducts.hasPrevPage, hasNext : totalProducts.hasNextPage   } );
       } catch (error) {
         console.log(error);
         res.status(500).json({ result: 'error', message: 'Error en la consulta.' });

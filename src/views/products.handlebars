@@ -1,20 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Lista de Productos</title>
+    <title>Productos</title>
 </head>
 <body>
-  <h1>Lista de Productos</h1>
-  <ul>
-    {{#each products}}
-      <li>
-        <p>Nombre del producto: {{this.title}}</p>
-        <a href="/product/{{this._id}}">Ver detalle</a> - Precio: {{this.price}}
-      </li>
-    {{/each}}
-  </ul>
-  
-  
-  </div>
+    <h1>Lista de Productos</h1>
+    <ul>
+        {{#each products}}
+            <li><a href="/product/{{this._id}}">{{this.title}}</a> - ${{this.price}}</li>
+        {{/each}}
+    </ul>
+    <div>
+        {{#if hasPrevius}}
+            <a href="/api/products/all?page=1">Primera</a>
+            <a href="/api/products/all?page={{previousPage}}">Anterior</a>
+        {{/if}}
+        {{#if hasNext}}
+            {{!-- {{#if hasPrevious}}<span> | </span>{{/if}} --}}
+            <a href="/api/products/all?page={{nextPage}}">Siguiente</a>
+            <a href="/api/products/all?page={{pageCount}}">Última</a>
+        {{/if}}
+    </div>
 </body>
 </html>
