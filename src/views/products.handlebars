@@ -4,6 +4,7 @@
     <title>Productos</title>
 </head>
 <body>
+    <p>Usuario: {{name}}</p> <h3><a href="/api/sessions/logout">Salir</a></h3>
     <h1>Lista de Productos</h1>
     <ul>
         {{#each products}}
@@ -16,7 +17,7 @@
             <a href="/api/products/all?page={{previousPage}}">Anterior</a>
         {{/if}}
         {{#if hasNext}}
-            {{!-- {{#if hasPrevious}}<span> | </span>{{/if}} --}}
+        
             <a href="/api/products/all?page={{nextPage}}">Siguiente</a>
             <a href="/api/products/all?page={{pageCount}}">Última</a>
         {{/if}}

@@ -82,9 +82,10 @@ router.get("/all", async(req,res)=>{
         //limite de elementos a mostrar
         const limit = 5;         
         let totalProducts = await productModel.paginate({},{page,limit});
-        // totalProducts = totalProducts.map(product=> product.toJSON())
+
+       
         let productsRender = totalProducts.docs.map(product => product.toJSON())
-        
+
         const previousPage = page - 1;
         const nextPage = page + 1;
         
