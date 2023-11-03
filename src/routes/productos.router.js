@@ -1,8 +1,11 @@
-const express = require("express");
-const router = express.Router()
-const fs = require('fs');
-const path = require('path');
-const {productModel} = require("../models/productos.model")
+import express from "express"
+import { Router } from "express"
+import fs from "fs"
+import path from "path"
+import productModel from "../models/productos.model.js"
+
+const productsRouter = Router()
+
 
 let products = [
     {"id":1,"title":"Aros A","description":"Aros bellos","code":1, "price":1000, "productStatus": true, "stock":10, "category": "Aros", "thumbnails":"ruta Aros"},
@@ -13,7 +16,7 @@ let products = [
 
 
 //RUTA RAÍZ
-router.get("/", async(req,res)=>{
+productsRouter.get("/", async(req,res)=>{
     const consulta = {}
     const opciones = {}
     ordenar = {}
@@ -74,7 +77,7 @@ router.get("/", async(req,res)=>{
 
 
 //VISTA PAGINACION
-router.get("/all", async(req,res)=>{
+productsRouter.get("/all", async(req,res)=>{
     
     try {
         //pagina a mostrar
@@ -99,7 +102,7 @@ router.get("/all", async(req,res)=>{
 
 
 //AÑADIR PRODUCTO CON POST//
-router.post("/", async(req,res)=>{
+productsRouter.post("/", async(req,res)=>{
   let {title, description, code, price, productStatus, stock, category, thumbnails} = req.body
 
   if (!title || !description  || !code || !price || !productStatus || !stock || !category ){
@@ -145,7 +148,7 @@ router.post("/", async(req,res)=>{
 
 
 //ACTUALIZAR PRODUCTOS POR ID//
-router.put("/:pid", async(req, res) => {
+productsRouter.put("/:pid", async(req, res) => {
   let {pid} = req.params
 
   let productToReplace = req.body
@@ -190,7 +193,7 @@ router.put("/:pid", async(req, res) => {
 
 
 //ELIMINAR PRODUCTO POR ID//
-router.delete("/:pid", async(req, res) => {
+productsRouter.delete("/:pid", async(req, res) => {
   let {pid} = req.params
   let result = await productModel.deleteOne({_id: pid})
   res.send({result: "success", payload: result})
@@ -216,7 +219,7 @@ router.delete("/:pid", async(req, res) => {
 });
 
 
-module.exports = router
+export default productsRouter
 
 
 //FUNCIONES FILE SYSTEM//

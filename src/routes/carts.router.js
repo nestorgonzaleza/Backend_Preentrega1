@@ -1,15 +1,18 @@
-const express = require("express");
-const router = express.Router()
-const fs = require('fs');
-const path = require('path');
-const {cartModel} = require("../models/carts.model")
+import express from "express";
+import { Router } from "express";
+import fs from "fs";
+import path from "path";
+import cartModel from "../models/carts.model.js"
+
+const cartsRouter = Router()
+
 
 //********************CARRITO********************//
 
 // let carrito = []
 
 //CONSULTAR POR LOS CARRITOS EXISTENTES
-router.get("/", async(req, res) => {
+cartsRouter.get("/", async(req, res) => {
   try{
     let carts = await cartModel.find().populate('products.id')
     res.send({result: "success", payload: carts})
@@ -19,7 +22,7 @@ router.get("/", async(req, res) => {
 });
 
 //CONSULTAR POR UN CARRITO ESPECIFICO
-router.get("/:cid", async(req, res) => {
+cartsRouter.get("/:cid", async(req, res) => {
   try{
     let {cid} = req.params
     let carts = await cartModel.findOne({_id:cid}).populate('products.id')
@@ -30,7 +33,7 @@ router.get("/:cid", async(req, res) => {
 });
 
 //AÑADIR UN NUEVO CARRITO VACÍO//
-router.post("/", async(req, res) => {
+cartsRouter.post("/", async(req, res) => {
 
   let result = await cartModel.create([[]])
     res.send({ result: "success", payload: result})
@@ -58,7 +61,7 @@ router.post("/", async(req, res) => {
 
 
 //ACTUALIZAR PRODUCTOS DE UN CARRITO//
-router.put("/:cid", async(req, res) => {
+cartsRouter.put("/:cid", async(req, res) => {
   try{
     let productsUpdate = req.body
     let {cid} = req.params
@@ -122,7 +125,7 @@ router.put("/:cid", async(req, res) => {
 });
 
 //ACTUALIZAR LA CANTIDAD DEL PRODUCTO INDICADO DEL CARRO INDICADO
-router.put("/:cid/products/:pid", async(req, res) => {
+cartsRouter.put("/:cid/products/:pid", async(req, res) => {
   try{
     let {cid} = req.params
     let {pid} = req.params
@@ -152,7 +155,7 @@ router.put("/:cid/products/:pid", async(req, res) => {
 });
 
 //ELIMINAR PRODUCTO DEL CARRO INDICADO
-router.delete("/:cid/products/:pid", async(req, res) => {
+cartsRouter.delete("/:cid/products/:pid", async(req, res) => {
   try{
     let {cid} = req.params
     let {pid} = req.params
@@ -196,7 +199,7 @@ router.delete("/:cid/products/:pid", async(req, res) => {
   //   }
 });
 
-module.exports = router
+export default cartsRouter
 
 //GUARDAR CARRITOS EN CARRITOS.JSON//
 function guardarCarrito() {

@@ -1,11 +1,12 @@
-const express = require("express");
-const router = express.Router()
-const {messageModel} = require("../models/messages.model")
+import express from "express";
+import { Router } from "express";
+const chatRouter = Router()
+import messageModel from "../models/messages.model.js"
 
 
 
 //CONSULTAR POR LOS MENSAJES EXISTENTES
-router.get("/", async(req, res) => {
+chatRouter.get("/", async(req, res) => {
     try{
       let msj = await messageModel.find()
       res.send({result: "success", payload: msj})
@@ -16,7 +17,7 @@ router.get("/", async(req, res) => {
 
 
 //enviar mensaje
-router.post("/", async(req,res)=>{
+chatRouter.post("/", async(req,res)=>{
     let {user,message} = req.body
   
     if (!user || !message ){
@@ -27,4 +28,4 @@ router.post("/", async(req,res)=>{
 })
 
 
-module.exports = router
+export default chatRouter

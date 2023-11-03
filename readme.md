@@ -1,5 +1,9 @@
 # Proyecto integrador
 
+user: test@coder.com
+pass: 123
+
+
 El proyecto consiste en configurar las solicitudes con postman dirigidas a un servidor MongoAtlas.
 
 Las rutas permiten trabajar con:

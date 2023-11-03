@@ -1,24 +1,24 @@
-const express = require("express");
-const http = require("http")
-const socketIo = require("socket.io")
-const handlebars = require("express-handlebars")
-const path = require("path");
-const {Server} = require("socket.io")
-const productsRouter = require("./routes/productos.router")
-const cartsRouter = require("./routes/carts.router")
-const chatRouter = require("./routes/chat.router")
-const userRouter = require("./routes/user.router")
-const mongoose = require("mongoose");
-const MongoStore = require("connect-mongo")
-const session = require("express-session")
-const FileStore = require("session-file-store")
-const cookieParser = require("cookie-parser")
+import express from "express";
+import http from "http";
+// import socketIo from "socket.io";
+import handlebars from "express-handlebars";
+import path from "path";
+import {Server} from "socket.io";
+import productsRouter from "./routes/productos.router.js";
+import cartsRouter from "./routes/carts.router.js";
+import chatRouter from "./routes/chat.router.js";
+import userRouter from "./routes/user.router.js";
+import mongoose from "mongoose";
+import MongoStore from "connect-mongo";
+import session from "express-session";
+import FileStore from "session-file-store";
+import cookieParser from "cookie-parser";
+import fs from "fs";
+import productModel from "./models/productos.model.js";
+import __dirname from "./utils.js";
+import initializePassport from "./config/passport.config.js";
+import passport from "passport";
 // const realTimeProductsRouter = require("./public/realtimeproducts.router")
-const fs = require("fs");
-const { productModel } = require("./models/productos.model");
-
-
-
 
 const app = express()
 const server = http.createServer(app)
@@ -58,6 +58,10 @@ app.use(session({
   resave: true,
   saveUninitialized: true
 }))
+
+initializePassport(passport)
+app.use(passport.initialize())
+app.use(passport.session())
 
 //routers
 app.use("/api/products", productsRouter)
