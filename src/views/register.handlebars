@@ -1,28 +1,31 @@
-<form id="user_form" method="POST" action="/api/sessions/register">
-
+{{!-- <form id="user_form" method="POST" action="/api/sessions/register"> --}}
+<form id="user_form">
     <label for="first_name">Nombre</label>
-    <input type="text" name="first_name" required>
+    <input type="text" name="first_name" id="first_name" >
 
 
     <label for="last_name">Apellido</label>
-    <input type="text" name="last_name" required>
+    <input type="text" name="last_name" id="last_name" >
 
 
     <label for="email">Email</label>
-    <input type="text" name="email" required>
+    <input type="text" name="email" id="email" >
 
 
     <label for="age">Edad</label>
-    <input type="text" name="age" required>
+    <input type="text" name="age" id="age" >
 
 
     <label for="password">Contraseña</label>
-    <input type="text" name="password" required>
+    <input type="text" name="password" id="password" >
 
     <label for="rol">Rol(user/admin)</label>
-    <input type="text" name="rol" required>
+    <select name ="rol" id="rol" id="rol">
+        <option value="admin">Admin</option>
+        <option value="usuario">Usuario</option>
+    </select>
 
     <button type="submit">Registrar usuario</button>
 
 </form>
-<script src="/user.router.js"></script>
+<script src="/register.js"></script>

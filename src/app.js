@@ -18,6 +18,13 @@ import productModel from "./models/productos.model.js";
 import __dirname from "./utils.js";
 import initializePassport from "./config/passport.config.js";
 import passport from "passport";
+import cartModel from "./models/carts.model.js";
+import userModel from "./models/user.model.js";
+import { createAndSetToken } from "./jwt/jwtoken.js";
+import { Strategy as JwtStrategy } from 'passport-jwt';
+import { ExtractJwt as ExtractJwt } from 'passport-jwt';
+import { passportCall } from "./utils.js";
+import { authorization } from "./utils.js";
 // const realTimeProductsRouter = require("./public/realtimeproducts.router")
 
 const app = express()
@@ -27,16 +34,8 @@ const fileStorage = FileStore(session)
 
 const PORT= 8080
 
-
-//middlewares
-app.use(express.json())
-app.use(express.urlencoded({extended:true}))
-//cookieparser
-app.use(cookieParser())
-
-
-
-
+const users = userModel.find()
+const carts = cartModel.find()
 
 //Mongoose
 mongoose.connect("mongodb+srv://nestorgonzalez:012342023@clusterbackend.m8mx5zs.mongodb.net/?retryWrites=true&w=majority")
@@ -59,7 +58,28 @@ app.use(session({
   saveUninitialized: true
 }))
 
-initializePassport(passport)
+const jwtOptions = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: "Secret-key"
+}
+
+passport.use(
+  new JwtStrategy(jwtOptions, (jwt_payload, done)=>{
+    const user = users.find((user)=>user.email === jwt_payload.email)
+    if(!user)
+    {
+      return done(null, false, {message: "Usuario no encontrado"})
+    }
+    return done(null, user)
+  })
+)
+
+//middlewares
+app.use(express.json())
+app.use(express.urlencoded({extended:true}))
+//cookieparser
+app.use(cookieParser())
+initializePassport()
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -83,15 +103,8 @@ app.use(express.static(__dirname+"/routes"))
 app.use(express.static(path.join(__dirname, "public")))
 
 
-//ENDPOINT CHAT
-app.get("/", (req,res)=>{
-  let user = {
-    cargo : "Profe",
-    institucion : "Coderhouse"
 
-  }
-  res.render("chat", {user:user})
-})
+
 
 //ENDPONT DETALLES
 app.get("/product/:pid", async (req,res)=>{
@@ -103,9 +116,9 @@ app.get("/product/:pid", async (req,res)=>{
 
 //http://localhost:8080/products
 app.get("/products", async (req,res)=>{
-  if(!req.session.emailUser){
-    return res.redirect("/login")
-  }
+  // if(!req.session.emailUser){
+  //   return res.redirect("/login")
+  // }
 
     //pagina a mostrar
     const page = parseInt(req.query.page) || 1;
@@ -131,6 +144,48 @@ app.get("/products", async (req,res)=>{
       name: req.session.nameUser
     } );
   
+})
+
+app.post("/login", async(req,res)=>{
+  const {email,password} = req.body
+
+  const emailToFind = email
+  const user = await users.findOne({email: emailToFind})
+
+  if (!user || user.password !== password){
+    return res.statusCode(401).json({message: "Error de autenticación"})
+  }
+  const token = createAndSetToken(res, email, password);
+  res.json({token, user: {emil: user.email, rol: user.rol}})
+})
+
+app.post("/api/register", async(req,res)=>{
+  const {first_name, last_name, email, age, password, rol} = req.body
+  const emailToFind = email
+  const exists = await users.findOne({email: emailToFind})
+  if(exists) return res.status(400).send({status:"error", error: "Usuario ya existe"})
+
+  const newUser = {
+    first_name,
+    last_name,
+    email,
+    age,
+    password,
+    cart: cartModel.create([[]]),
+    rol
+  }
+  userModel.create(newUser)
+  const token = createAndSetToken(res, email, password)
+  res.send({token})
+})
+
+app.get("/", (req,res)=>{
+  // res.sendFile("index.html", { root: app.get("views")})
+  res.render("register")
+})
+
+app.get("/current", passportCall("jwt"), authorization("user"), (req,res)=>{
+  res.redirect("/products")
 })
 
 //http://localhost:8080/login

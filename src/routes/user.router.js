@@ -4,11 +4,7 @@ import { createHash, isValidPassword} from "../utils.js";
 import passport from "passport";
 
 const userRouter = Router()
-// const express = require("express");
-// const { userModel } = require("../models/user.model");
-// const { errorMonitor } = require("connect-mongo");
 
-// const router = express.Router()
 
 userRouter.post("/register", passport.authenticate("register", {failureRedirect: "/failregister"}), async (req,res)=>{
     try{
@@ -44,7 +40,7 @@ userRouter.post("/login", passport.authenticate("login", {failureRedirect: "/fai
             req.session.nameUser = req.user.first_name
             res.redirect("/products")
         }
-       
+        
     } catch (error)
     {
 
@@ -57,6 +53,7 @@ userRouter.get("/faillogin", async(req,res)=>{
 })
 
 userRouter.get("/logout", (req,res)=>{
+    console.log(req.session)
     req.session.destroy((error=>{
 
         if(error){
@@ -72,6 +69,7 @@ userRouter.get("/githubcallback", passport.authenticate("github", {failureRedire
     req.session.user = req.user
     req.session.emailUser = req.session.user.email
     req.session.rolUser = req.session.user.rol
+    req.session.nameUser=req.session.user.email
     res.redirect("/products")
 })
 
