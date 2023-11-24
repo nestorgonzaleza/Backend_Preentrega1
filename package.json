@@ -114,7 +114,7 @@
     "wrap-ansi-cjs": "^7.0.0"
   },
   "scripts": {
-    "start": "nodemon ./src/app.js"
+    "start": "npm --watch ./Desafio_Reestructura_Servidor/src/app1.js"
   },
   "keywords": [],
   "author": "",
